@@ -1,0 +1,24 @@
+---
+
+### 🐍 `logpulse/ingest.py`
+```python
+import sys
+from pulse_engine import PulseMonitor
+from analyzer import detect_anomalies
+from alerter import alert
+
+def main(logfile):
+    monitor = PulseMonitor(window_size=10)
+
+    with open(logfile, 'r') as f:
+        for line in f:
+            ts = monitor.feed(line)
+            if ts:
+                if detect_anomalies(monitor):
+                    alert(ts)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python ingest.py <logfile>")
+    else:
+        main(sys.argv[1])
